@@ -97,5 +97,5 @@ In a real SOC environment, the next steps would be:
 - Escalate to Tier 2 analyst for further investigation
 
 ## 👤 Author
-[Fredrick Agufenwa]  
+Fredrick Agufenwa  
 Cybersecurity Student | SOC & Threat Detection
