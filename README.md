@@ -33,6 +33,7 @@ Retrieves all failed login attempts from the dataset.
 index=main source="windows_auth_logs.csv" event_id=4625
 | stats count by ip_address
 | sort -count
+
 Groups failed logins by IP address to identify
 the highest offenders.
 
