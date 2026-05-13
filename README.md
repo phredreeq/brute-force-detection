@@ -1,15 +1,15 @@
-# 🔍 Brute Force Detection Using Splunk & Windows Event Logs
+# Brute Force Detection Using Splunk & Windows Event Logs
 
-## 📌 Problem
+## Problem
 Detect brute-force login attacks by identifying repeated failed authentications followed by a successful login, using Splunk as a SIEM tool.
 
-## 🎯 Objectives
+## Objectives
 - Simulate realistic Windows authentication log data
 - Ingest logs into Splunk for analysis
 - Write SPL detection queries to identify attack patterns
 - Flag suspicious IPs using threshold and correlation logic
 
-## 🗃️ Logs Used
+## Logs Used
 Simulated Windows Authentication Logs (CSV format)
 
 | Event ID | Meaning |
@@ -17,12 +17,12 @@ Simulated Windows Authentication Logs (CSV format)
 | 4625 | Failed Login Attempt |
 | 4624 | Successful Login |
 
-## 🛠️ Tools Used
+## Tools Used
 - **Splunk** — SIEM platform for log analysis
 - **Python** — Log simulation and data generation
 - **Windows Event IDs** — Authentication log standards
 
-## 🔎 Detection Logic (SPL Queries)
+## Detection Logic (SPL Queries)
 
 ### Query 1 — Find All Failed Logins
 index=main source="windows_auth_logs.csv" event_id=4625
@@ -55,7 +55,7 @@ index=main source="windows_auth_logs.csv"
 Identifies IPs that repeatedly failed and then
 successfully logged in — the classic brute force pattern.
 
-## 📸 Results
+## Results
 
 
 ![Query 1 - All Failures](screenshots/query1_all_failures.png)
@@ -77,7 +77,7 @@ successfully logged in — the classic brute force pattern.
 
 
 
-## 🧠 Analysis
+## Analysis
 The IP address 192.168.1.105 generated 60+ failed login
 attempts against the "admin" account within minutes,
 followed by a successful authentication. This pattern
@@ -88,7 +88,7 @@ logic, demonstrating that the queries work beyond a
 single hardcoded attacker; they detect the pattern,
 not just the IP.
 
-## ✅ Conclusion
+## Conclusion
 Detection logic successfully identified attacker IPs 
 using threshold and correlation analysis in Splunk.
 In a real SOC environment, the next steps would be:
