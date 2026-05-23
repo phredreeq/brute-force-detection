@@ -5,19 +5,14 @@
 
 ## 🎯 What This Project Is About
 
-This project detects brute force login attacks
-using Splunk SIEM and simulated Windows
-authentication logs.
+This project detects brute force login attacks using Splunk SIEM and simulated Windows authentication logs.
 
-A brute force attack happens when an attacker
-repeatedly tries different passwords against
-one account until they get in. This project
-simulates that attack, ingests the logs into
-Splunk and writes detection logic that
-automatically identifies the attacker.
+A brute force attack happens when an attacker repeatedly tries different passwords against one account until they get in. This project simulates that attack, ingests the logs into Splunk and writes detection logic that automatically identifies the attacker.
 
 **Attack type:** Brute Force Authentication
+
 **Detection method:** Threshold and Correlation
+
 **Tools:** Python, Splunk, SPL
 
 ---
@@ -25,9 +20,8 @@ automatically identifies the attacker.
 ## 🧠 Understanding the Attack
 
 ### What is a Brute Force Attack?
-An attacker uses automated software to try
-thousands of passwords against one account
-until one works.
+An attacker uses automated software to try thousands of passwords against one account until one works.
+
 02:00:00 - Failed login - admin account
 02:00:10 - Failed login - admin account
 02:00:20 - Failed login - admin account
@@ -35,11 +29,9 @@ until one works.
 02:05:10 - SUCCESS - admin account
 
 ### Why Do Attackers Use It?
-- Automated tools can try thousands of
-  passwords per minute
+- Automated tools can try thousands of passwords per minute
 - Targets accounts with weak passwords
-- Common against internet-facing services
-  like SSH, RDP and web portals
+- Common against internet-facing services like SSH, RDP and web portals
 
 ### How Windows Records This
 Windows logs every login attempt as an Event ID:
@@ -50,8 +42,7 @@ Windows logs every login attempt as an Event ID:
 | 4624 | Successful login | Correct password found |
 
 ### The Detection Pattern
-Many 4625s from same IP → then one 4624
-= Brute force attack confirmed
+Many 4625s from same IP → then one 4624 = Brute force attack confirmed
 
 ### Two Detection Techniques Used
 
@@ -61,6 +52,26 @@ If any IP fails more than 5 times → flag it
 Correlation logic — connect two events:
 If same IP fails many times AND then succeeds
 → confirmed brute force attack
+
+---
+
+## 🎯 MITRE ATT&CK Mapping
+
+| Field | Details |
+|---|---|
+| Tactic | Credential Access (TA0006) |
+| Technique | Brute Force (T1110) |
+| Sub-technique | Password Guessing (T1110.001) |
+| Reference | attack.mitre.org/techniques/T1110 |
+
+### What This Means
+MITRE ATT&CK is a globally recognized framework that documents real world attack techniques used by threat actors.
+
+Credential Access (TA0006) is the tactic — the attacker's goal is to steal or guess valid credentials to gain unauthorized access.
+
+Brute Force (T1110) is the technique — the method used to achieve that goal by systematically trying passwords until one works.
+
+Sub-technique T1110.001 specifically covers password guessing — trying common or likely passwords against known accounts.
 
 ---
 
@@ -78,14 +89,32 @@ Windows 10 or later (tested on Windows 10 VM)
 ### Required Knowledge
 - Basic understanding of what a SIEM is
 - Basic understanding of Windows Event IDs
-- No prior Python or Splunk experience needed
-  — all commands are provided
+- No prior Python or Splunk experience needed — all commands are provided here
 
 ### Splunk Setup
 Splunk Enterprise free trial available at:
 splunk.com/en_us/download/splunk-enterprise.html
-Free trial allows up to 500MB data per day
-which is sufficient for this project.
+Free trial allows up to 500MB data per day which is sufficient for this project.
+
+---
+
+## Architecture
+
+The diagram below shows the complete detection
+pipeline from attack simulation to confirmed detection.
+
+
+
+![Architecture Diagram](architecture_diagram.png)
+
+
+
+### How It Works
+1. Python simulates a brute force attack on Windows VM
+2. Attack generates a CSV log file with 51 entries
+3. Logs uploaded to Splunk SIEM on Ubuntu Server
+4. SPL queries analyze logs using threshold and correlation detection logic
+5. Detection results confirm attack with IOCs mapped to MITRE ATT&CK T1110.001
 
 ---
 
@@ -175,8 +204,7 @@ Total: 51 log entries
 
 ### Step 3 — Run the Script
 
-Open Command Prompt and navigate to where
-you saved the file:
+Open Command Prompt and navigate to where you saved the file:
 cd Desktop
 
 Run the script:
@@ -349,6 +377,37 @@ The attacker IP should be clearly at top
 What to look for:
 IPs with both high failures AND successes
 This confirms the complete brute force pattern
+
+---
+
+## 🔍 Indicators of Compromise (IOCs)
+
+IOCs are evidence that an attack has occurred. These are the digital fingerprints left by a brute force attack in Windows authentication logs.
+
+### IOCs Detected in This Project
+
+| IOC | Threshold | Significance |
+|---|---|---|
+| High failed login count | More than 5 per IP | Automated attack tool |
+| Single source IP | Same IP across all attempts | One attacker origin |
+| Off-hours activity | Outside 8AM-6PM | Avoids detection |
+| Privileged account targeted | Admin account | Maximum access sought |
+| Sequential timing | Regular intervals | Automated not manual |
+| Success after failures | 4624 after many 4625s | Compromise confirmed |
+
+### How to Use IOCs
+When investigating a suspected brute force:
+1. Check if multiple IOCs are present
+2. One IOC alone may be a false positive
+3. Three or more IOCs together = high confidence
+4. Document all IOCs found for your report
+
+### IOC Confidence Levels
+| IOCs Present | Confidence | Action |
+|---|---|---|
+| 1 IOC | Low — monitor | Watch for more activity |
+| 2 IOCs | Medium — investigate | Start investigation |
+| 3+ IOCs | High — respond | Immediate response needed |
 
 ---
 
