@@ -105,7 +105,7 @@ pipeline from attack simulation to confirmed detection.
 
 
 
-![Architecture Diagram](architecture_diagram.png)
+![Architecture Diagram](screenshots/WhatsApp Image 2026-05-23 at 9.22.28 PM.jpeg)
 
 
 
